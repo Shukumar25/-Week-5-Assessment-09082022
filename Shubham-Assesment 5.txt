@@ -1,0 +1,79 @@
+1) create table StudentID select * from Student;
+
+
+2) create table employers as (select * from companies where 1=2);
+
+
+3) (a) select * from (
+       select * from Student order by id desc limit 10
+       )Var1
+       order by id ASC;
+
+   (b) select name,salary from employee where salary = (select max(salary) from employee);
+       select name,salary from employee where salary = (select min(salary) from employee);
+
+
+4) select name
+   from sys.databases
+   where name = N'TutorialDB'
+   drop DATABASE TutorialDB
+   GO
+   create DATABASE TutorialDB
+   GO
+
+
+5) select * from students where NAME LIKE 'P%' and SURNAME LIKE 'S%';
+
+
+6) select * from Student where rowid = select max(rowid) from Student;
+
+
+7) create table Employees
+   (
+   	EmployeeID int NOT NULL PRIMARY KEY,
+   	FirstName varchar(50) NOT NULL,
+   	LastName varchar(50) NOT NULL,
+   	ManagerID int NULL
+   )
+
+   INSERT INTO Employees VALUES(1,'Rohan', 'Singh',NULL)
+   INSERT INTO Employees VALUES(2,'Rakesh', 'Sharma',1)
+   INSERT INTO Employees VALUES(3,'Rahul', 'Kumar',1)
+
+   WITH
+      cteReports(EmpID, FirstName,LastName,MgrID,EmpLevel)
+       AS
+       (
+           select EMPLOYEEID, FirstName,LastName,ManagerID,1
+           from Employees
+           where ManagerID IS NULL
+           UNION ALL
+           select e.EmployeeID, e.FirstName, e.LastName, e.ManagerID,
+               r.EmpLevel +1
+               from Employees e 
+               INNER JOIN cteReports r 
+               ON e.ManagerID = r.EmpID
+       )
+
+      select 
+          FirstName + ' ' + LastName As FullName,
+          EmpLevel,
+          (select FirstName + ' ' + LASTName from Employees
+          where EmployeeID = cteReports.MgrID) AS Manager
+          from cteReports
+          order by EmpLevel, MgrID
+
+
+8) create TRIGGER student_trigger
+   before Insert
+   ON student
+   FOR EACH ROW
+   SET new.marks = new.marks+10;
+   
+   Update Example :
+   UPDATE Customers
+   SET ContactName = 'Abcd', Location= 'Gurgaon'
+   WHERE CustomerID = 4;
+
+   delete Example :
+   DELETE FROM Customers WHERE CustomerName='Xyz';
